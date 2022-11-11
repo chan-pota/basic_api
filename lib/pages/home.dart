@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:layout/pages/workout.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
 
 
 
@@ -36,8 +38,9 @@ class _HomepageState extends State<Homepage> {
         child: Padding(
           padding: const EdgeInsets.all(3.0),
           child: FutureBuilder(
-            builder: (context, snapshot){
-                var data = json.decode(snapshot.data.toString());
+            builder: (context,AsyncSnapshot snapshot){
+                //var data = json.decode(snapshot.data.toString());
+                var data = snapshot.data;
                 return ListView.builder(
                   itemBuilder: (BuildContext context, int index){
                     return Mybox(data[index]['title'], data[index]['subtitle'], data[index]['url'], data[index]['detail']);
@@ -45,7 +48,8 @@ class _HomepageState extends State<Homepage> {
                   itemCount: data.length,
                 );
             },
-            future: DefaultAssetBundle.of(context).loadString('assets/data.json'),
+            //future: DefaultAssetBundle.of(context).loadString('assets/data.json'),
+            future: getData()
           )
         ),
       ),
@@ -119,6 +123,12 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-
+  Future getData() async {
+      //https://raw.githubusercontent.com/chan-pota/basic_api/main/source_file/data.json
+      var url = Uri.https('raw.githubusercontent.com','/chan-pota/basic_api/main/source_file/data.json');
+      var response = await http.get(url);
+      var result = json.decode(response.body);
+      return result;
+  }
 
 }
